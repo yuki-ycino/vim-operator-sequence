@@ -17,7 +17,7 @@ function! s:create_local_map()
   \   ['line', 'V'],
   \   ['block', '<C-v>'],
   \ ]
-  execute printf(map, type, key)
+    execute printf(map, type, key)
   endfor
 endfunction
 call s:create_local_map()
@@ -27,6 +27,15 @@ function! operator#sequence#map(...)
     return ''
   endif
   set operatorfunc=operator#sequence#do
+  let s:operators = copy(a:000)
+  return 'g@'
+endfunction
+
+function! operator#sequence#map_i(...)
+  if mode(1) ==# 'no' && s:operators != a:000
+    return ''
+  endif
+  set operatorfunc=operator#sequence#do_i
   let s:operators = copy(a:000)
   return 'g@'
 endfunction
@@ -47,6 +56,11 @@ function! operator#sequence#do(type)
   finally
     let &selection = save_selection
   endtry
+endfunction
+
+function! operator#sequence#do_i(type)
+  call operator#sequence#do(a:type)
+  call feedkeys('i')
 endfunction
 
 let &cpo = s:save_cpo
